@@ -1,0 +1,48 @@
+using examples/testScriptExt.txt
+
+var int x = 1
+var int z = 8
+
+if var x > var z {
+    coutstreamadd var w
+    coutstreamadd endl
+}
+else {
+    coutstreamadd not 
+    coutstreamadd endl
+}
+
+for i 0 : {
+    if var x < var z {
+        coutstreamadd welcome...
+        coutstreamadd endl
+    }
+    if it i > 0 {
+        break
+    }
+    coutstreamadd endl
+}
+
+coutstreamadd would you like to start? (y/n) 
+input userComfirm
+
+if userComfirm == n {
+    quit
+}
+else {
+    for i 0 : {
+
+        coutstreamadd Which way would you like to go? (left/right/up/down) 
+        input direction
+
+        if direction == right {
+            coutstreamadd You win!
+            coutstreamadd endl 
+            quit 
+        }
+        else {
+            coutstreamadd Incorrect! Guess again.
+            coutstreamadd endl
+        }
+    }
+}
