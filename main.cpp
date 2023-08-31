@@ -7,13 +7,14 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    int exitCode = 2;
+    int exitCode;
     if (argc > 1)
     {
-        int exitCode = parseRun(argv[1]);
+        exitCode = parseRun(argv[1]);
     }
     else 
     {
+        exitCode = 2;
         cout << "Err: No filename passed." << endl;
     }
 

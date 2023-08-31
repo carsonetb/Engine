@@ -1,32 +1,17 @@
-using examples/testScriptExt.txt
+var list:list:string testList = [[hi, hello, ho], [hii, helloo, hoho]]
+var int access = 0
+coutstreamadd var [var:access][0]testList
+coutstreamadd endl
 
-var int x = 1
-var int z = 8
-
-if var x > var z {
-    coutstreamadd var w
-    coutstreamadd endl
-}
-else {
-    coutstreamadd not 
-    coutstreamadd endl
-}
-
-for i 0 : {
-    if var x < var z {
-        coutstreamadd welcome...
-        coutstreamadd endl
-    }
-    if it i > 0 {
-        break
-    }
-    coutstreamadd endl
-}
+var list:list:int testList2 = [[1, 5, 3], [7, 4, 3]]
+var int access2 = 1
+coutstreamadd var [var:access][0]testList2
+coutstreamadd endl
 
 coutstreamadd would you like to start? (y/n) 
 input userComfirm
 
-if userComfirm == n {
+if var userComfirm == string n {
     quit
 }
 else {
@@ -35,7 +20,7 @@ else {
         coutstreamadd Which way would you like to go? (left/right/up/down) 
         input direction
 
-        if direction == right {
+        if var direction == string right {
             coutstreamadd You win!
             coutstreamadd endl 
             quit 

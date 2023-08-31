@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "../raylib/src/raylib.h"
 #include <iostream>
 #include <fstream>
@@ -7,8 +8,23 @@
 #include <algorithm>
 #include <map>
 #include <tuple>
+#include <variant>
+#include <sstream>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/regex.hpp>
 
 using namespace std;
+
+void si(string &i)
+{
+    i = stoi(i);
+}
+
+void sf(string &i)
+{
+    i = stof(i);
+}
 
 // trim from start (in place)
 string ltrim(std::string s) {
@@ -78,24 +94,60 @@ string readFile(string fileName)
 
 vector<string> splitString(string toSplit, string character)
 {
-    auto to_string = [](auto &&r) -> string
+    vector<string> result;
+    size_t i = toSplit.find(character);
+    result.push_back(toSplit.substr(0, i));
+
+    if (i == string::npos)
     {
-        const auto data = &*r.begin();
-        const auto size = static_cast<size_t>(std::ranges::distance(r));
+        return result;
+    }
 
-        return string{data, size};
-    };
+    while (true)
+    {
+        i += character.size();
+        size_t end = toSplit.find(character, i);
+        string rest = toSplit.substr(i, end - i);
+        i += rest.size();
+        result.push_back(rest);
 
-    const auto range = toSplit |
-                      std::ranges::views::split(character) |
-                      std::ranges::views::transform(to_string);
+        if (end == string::npos)
+        {
+            break;
+        }
+    }
 
-    return {std::ranges::begin(range), std::ranges::end(range)};
+    return result;
+}
+
+string trimString(string toTrim, string splitBy)
+{
+    string out;
+    if (startsWith(toTrim, splitBy))
+    {
+        int splitBySize = splitBy.size();
+        int toTrimSize = toTrim.size();
+
+        for (int i = 0; i < toTrimSize; i++)
+        {
+            if (i > splitBySize - 1)
+            {
+                out += toTrim[i];
+            }
+        }
+    }
+
+    return out;
 }
 
 bool startsWith(const string &str, const string &prefix) 
 {
     return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+
+bool endsWith(const string &str, const string &suffix) 
+{
+    return str.size() >= suffix.size() && str.compare(-1, suffix.size(), suffix) == 0;
 }
 
 vector<string> insertVectorAtIndString(int i, vector<string> addedInto, vector<string> toAdd)

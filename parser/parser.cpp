@@ -1,5 +1,7 @@
 #include "../raylib/src/raylib.h"
 #include "../utils/utils.h"
+#include "listcomp.h"
+#include "varcomp.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -8,19 +10,27 @@
 #include <algorithm>
 #include <map>
 #include <tuple>
+#include <variant>
 
 using namespace std;
 
 int parseRun(string fileName)
 {
-    map<string, tuple<string, string>> programVars;
-    map<int, tuple<string, int, int, int>> iterators;
-    map<string, tuple<int, int, int>> iteratorsNameAccess;
-    // First tuple int is the value of
-    // the iterator, second and third is start and stop. String is the name. Key is the
-    // nested number.
+    // General variables, varies.
+    map<string, TVarObj> programVars;
 
-    const vector<string> varTypes = {"bool", "int", "float", "string", "list", "iterator"};
+    // Iterators, used in for loops.
+    map<int, TIterator> iterators;
+
+    // Sometimes we need to access an iterator by it's name, not it's nested
+    // depth.
+    map<string, TIterator> iteratorsNameAccess;
+
+    // Types of variables that can be created. Not all of them can be 
+    // specifically created by the user.
+    const vector<string> varTypes = {"bool", "int", "float", "string", "list", "iterator", "pointer"};
+
+    // Operators used to compare things.
     const vector<string> compareOperators = {"==", "!=", ">", "<", ">=", "<="};
 
     string fileString = readFile(fileName);
@@ -48,7 +58,7 @@ int parseRun(string fileName)
     {
         for (int j = 0; j < iterators.size(); j++)
         {
-            iteratorsNameAccess[get<0>(iterators[j])] = tuple<int, int, int>{get<1>(iterators[j]), get<2>(iterators[j]), get<3>(iterators[j])};
+            iteratorsNameAccess[get<0>(iterators[j])] = iterators[j];
         }
 
         if (startsWith(splitLines[i], (string) "}"))
@@ -73,8 +83,9 @@ int parseRun(string fileName)
                             i = get<1>(statementInfo[nestedStatements]);
                             continue;
                         }
-                        else
+                        else // end
                         {
+                            iterators.erase(nestedStatements);
                             continue;
                         }
                     }
@@ -82,6 +93,7 @@ int parseRun(string fileName)
                     {
                         if (get<1>(iterators[nestedStatements]) == -1)
                         {
+                            iterators.erase(nestedStatements);
                             continue;
                         }
 
@@ -114,26 +126,9 @@ int parseRun(string fileName)
             vector<string> beforeEqualsSplitSpace = splitString(splitEquals[0], " ");
             string varType = beforeEqualsSplitSpace[1]; // var <<[type]>> [name] = [val];
             string varName = beforeEqualsSplitSpace[2]; // var [type] <<[name]>> = [val];
-            string varVal = splitEquals[1];
+            string varVal = splitEquals[1]; // var [type] [name] = <<[val]>>
 
-            if (startsWith(varVal, " "))
-            {
-                varVal = varVal.substr(1, varVal.size() - 1);
-            }
-
-            if (find(varTypes.begin(), varTypes.end(), varType) == varTypes.end())
-            {
-                cout << "Error: Unknown type '" << varType << "' on line " << i + 1 - linesImported << ", aborting." << endl
-                        << flush;
-                return 1;
-            }
-            if (trimChar(varType, ' ') == "iterator")
-            {
-                cout << "TypeError on line " << i + 1 - linesImported << ": Cannot create variable of iterator type. Aborting." << flush;
-                return 1;
-            }
-
-            tuple<string, string> varDesc = {trimChar(varType, ' '), trimChar(varVal, ' ')};
+            TVarObj varDesc = getMappableVar(varType, varVal);
             programVars[varName] = varDesc;
             continue;
         }
@@ -146,18 +141,20 @@ int parseRun(string fileName)
 
             if (splitSpaces[1] == "endl")
             {
-                cout << endl
-                        << flush;
+                cout << endl << flush;
                 continue;
             }
             if (splitSpaces[1] == "var")
             {
-                cout << get<1>(programVars[splitSpaces[2]]) << flush;
+                TVarObj varObj = getVarVal(splitSpaces[2], programVars);
+                string varString = convertVarToString(varObj, programVars);
+                cout << varString << flush;
                 continue;
             }
             else
             {
-                cout << splitString(splitLines[i], "coutstreamadd ")[1] << flush;
+                string toPrint = splitString(splitLines[i], "coutstreamadd ")[1];
+                cout << toPrint << flush;
                 continue;
             }
         }
@@ -195,55 +192,45 @@ int parseRun(string fileName)
             right = trimChar(right, ' ');
             vector<string> leftSplitSpace = splitString(left, " ");
             vector<string> rightSplitSpace = splitString(right, " ");
-            string leftVal;
-            string rightVal;
+            TVarObj leftVal;
+            TVarObj rightVal;
 
             if (leftSplitSpace[0] == "var")
             {
-                leftVal = get<1>(programVars[leftSplitSpace[1]]);
-                string type = get<0>(programVars[leftSplitSpace[1]]);
-
-                if ((type == "string" | type == "list" | type == "bool") && !(operatorUsed == "==" | operatorUsed == "!="))
-                {
-                    cout << "TypeError: On line " << i + 1 - linesImported << ", left value of type '" << type << "' cannot use the '" << operatorUsed << "' operator." << endl
-                            << flush;
-                    return 1;
-                }
+                leftVal = programVars[leftSplitSpace[1]];
             }
             else if (leftSplitSpace[0] == "it")
             {
-                tuple<int, int, int> leftValMap = iteratorsNameAccess[leftSplitSpace[1]];
-                int leftValInt = get<0>(leftValMap);
-                leftVal = to_string(leftValInt);
+                leftVal = iteratorsNameAccess[leftSplitSpace[1]];
             }
             else
             {
-                leftVal = leftSplitSpace[0];
+                leftVal = getMappableVar(leftSplitSpace[0], leftSplitSpace[1]);
             }
 
             if (rightSplitSpace[0] == "var")
             {
-                rightVal = get<1>(programVars[rightSplitSpace[1]]);
-                string type = get<0>(programVars[leftSplitSpace[1]]);
-
-                if ((type == "string" | type == "list" | type == "bool") && !(operatorUsed == "==" | operatorUsed == "!="))
-                {
-                    cout << "TypeError: On line " << i + 1 - linesImported << ", right value of type '" << type << "' cannot use the '" << operatorUsed << "' operator." << endl
-                            << flush;
-                    return 1;
-                }
+                rightVal = programVars[rightSplitSpace[1]];
             }
             else if (rightSplitSpace[0] == "it")
             {
-                rightVal = to_string(get<0>(iteratorsNameAccess[rightSplitSpace[1]]));
+                rightVal = iteratorsNameAccess[rightSplitSpace[1]];
             }
             else
             {
-                rightVal = rightSplitSpace[0];
+                rightVal = getMappableVar(rightSplitSpace[0], rightSplitSpace[1]);
             }
 
-            leftVal = trimChar(leftVal, ' ');
-            rightVal = trimChar(rightVal, ' ');
+            string leftStringType = TVarObjTypes.at((int)leftVal.index());
+            string rightStringType = TVarObjTypes.at((int)rightVal.index());
+            if (((leftStringType == "string" | leftStringType == "list" | leftStringType == "bool") 
+               | (rightStringType == "string" | rightStringType == "list" | rightStringType == "bool"))
+              && !(operatorUsed == "==" | operatorUsed == "!=")
+            )
+            {
+                cout << "SyntaxError on line " << i + 1 - linesImported << ": In valid operands for operator '" << operatorUsed << "'. Aborting." << endl << flush;
+                return 1;
+            }
 
             bool ifReturns = false;
 
@@ -257,19 +244,20 @@ int parseRun(string fileName)
             }
             if (operatorUsed == ">")
             {
-                ifReturns = stof(leftVal) > stof(rightVal);
+                ifReturns = leftVal > rightVal;
             }
             if (operatorUsed == "<")
             {
-                ifReturns = stof(leftVal) < stof(rightVal);
+                ifReturns = leftVal < rightVal;
             }
             if (operatorUsed == ">=")
             {
-                ifReturns = stof(leftVal) >= stof(rightVal);
+                ifReturns = leftVal >= rightVal;
             }
             if (operatorUsed == "<=")
             {
-                ifReturns = stof(leftVal) <= stof(rightVal);
+                ifReturns = leftVal <= rightVal;
+
             }
 
             nestedStatements += 1;
@@ -326,7 +314,7 @@ int parseRun(string fileName)
             int iteratorStart = stoi(splitSpace[2]);
 
             nestedStatements += 1;
-            iterators[nestedStatements] = tuple<string, int, int, int>{iteratorName, iteratorStart + 1, iteratorStart + 1, iteratorEnd};
+            iterators[nestedStatements] = (TIterator){iteratorName, iteratorStart + 1, iteratorStart + 1, iteratorEnd};
             statementInfo[nestedStatements] = tuple<string, int, bool>{"for", i, forever};
             continue;
         }
@@ -342,7 +330,7 @@ int parseRun(string fileName)
                 bracketExceptions += 1;
                 nestedStatements -= 1;
             }
-            while (!startsWith(splitLines[i], "}") | bracketExceptions > 0)
+            while (!startsWith(splitLines[i], "}") || bracketExceptions > 0)
             {
                 if (startsWith(splitLines[i], "}"))
                 {
@@ -358,7 +346,7 @@ int parseRun(string fileName)
             string inputString;
             cin >> inputString;
             vector<string> splitSpaces = splitString(splitLines[i], " ");
-            programVars[splitSpaces[1]] = tuple<string, string>{"string", inputString};
+            programVars[splitSpaces[1]] = inputString;
         }
 
         if (startsWith(splitLines[i], (string){"quit"}))
