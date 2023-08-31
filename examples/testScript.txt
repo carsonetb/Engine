@@ -5,7 +5,7 @@ coutstreamadd endl
 
 var list:list:int testList2 = [[1, 5, 3], [7, 4, 3]]
 var int access2 = 1
-coutstreamadd var [var:access2][0]testList2
+coutstreamadd var [var:access2][var:access]testList2
 coutstreamadd endl
 
 coutstreamadd would you like to start? (y/n) 

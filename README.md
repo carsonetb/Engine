@@ -26,6 +26,10 @@ features:
 * Code compiling.
 * Integration with the physics and graphics engines.
 
+### Documentation
+There is a DOCUMENTATION.md file in the parser folder. This file is a basic overview
+of the entire engine.
+
 ## Physics
 I plan to use Bullet for 3D physics and Chipmunk for 2D, because making my own
 physics engine is scary!
@@ -35,3 +39,6 @@ I plan to use Raylib, a library for making games that makes OpenGL super simple.
 I have used OpenGL a bit before, and I could never make anything beyond loading
 a simple 3D model in it. Also, I find Raylib very similar to PyGame, a library
 a Python graphics library which I've used quite a bit.
+
+## Examples
+You can look in the examples folder to find examples you can run.
