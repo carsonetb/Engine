@@ -46,6 +46,17 @@ static inline bool operator>(const TList &lhs, const TList &rhs) { return false;
 static inline bool operator<=(const TList &lhs, const TList &rhs) { return false; }
 static inline bool operator>=(const TList &lhs, const TList &rhs) { return false; }
 
+static inline bool operator+=(const TList &lhs, const TList &rhs) { return false; }
+static inline bool operator-=(const TList &lhs, const TList &rhs) { return false; }
+static inline bool operator*=(const TList &lhs, const TList &rhs) { return false; }
+static inline bool operator/=(const TList &lhs, const TList &rhs) { return false; }
+
+
 typedef std::variant<bool, int, float, std::string, TPointer, TIterator, TList> TVarObj;
 const std::map<int, std::string> TVarObjTypes = {{0, "bool"}, {1, "int"}, {2, "float"}, {3, "string"}, {4, "pointer"}, {5, "iterator"}, {6, "list"}};
 typedef int TError;
+
+float addObjs(TVarObj left, TVarObj right);
+float subtractObjs(TVarObj left, TVarObj right);
+float multiplyObjs(TVarObj left, TVarObj right);
+float divideObjs(TVarObj left, TVarObj right);

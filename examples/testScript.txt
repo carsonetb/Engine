@@ -8,6 +8,11 @@ var int access2 = 1
 print var [var:access2][var:access]testList2
 print endl
 
+var int a = 5
+varchange a + int 1
+print var a 
+print endl
+
 print would you like to start? (y/n) 
 input userComfirm
 

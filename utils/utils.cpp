@@ -16,6 +16,13 @@
 
 using namespace std;
 
+// Yucky code not mine ------
+template<class... Ts>
+struct overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+// end of yucky code --------
+
 void si(string &i)
 {
     i = stoi(i);
@@ -120,26 +127,6 @@ vector<string> splitString(string toSplit, string character)
     return result;
 }
 
-string trimString(string toTrim, string splitBy)
-{
-    string out;
-    if (startsWith(toTrim, splitBy))
-    {
-        int splitBySize = splitBy.size();
-        int toTrimSize = toTrim.size();
-
-        for (int i = 0; i < toTrimSize; i++)
-        {
-            if (i > splitBySize - 1)
-            {
-                out += toTrim[i];
-            }
-        }
-    }
-
-    return out;
-}
-
 bool startsWith(const string &str, const string &prefix) 
 {
     return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
@@ -147,7 +134,31 @@ bool startsWith(const string &str, const string &prefix)
 
 bool endsWith(const string &str, const string &suffix) 
 {
-    return str.size() >= suffix.size() && str.compare(-1, suffix.size(), suffix) == 0;
+    if (str.length() >= suffix.length()) {
+        return (0 == str.compare (str.length() - suffix.length(), suffix.length(), suffix));
+    } else {
+        return false;
+    }
+}
+
+string trimString(string toTrim, string splitBy)
+{
+    if (startsWith(toTrim, splitBy))
+    {
+        for (int i = 0; i < splitBy.size(); i++)
+        {
+            toTrim.erase(toTrim.begin());
+        }
+    }
+    if (endsWith(toTrim, splitBy))
+    {
+        for (int i = 0; i < splitBy.size(); i++) 
+        {
+            toTrim.erase(toTrim.end() - 1);
+        }
+    }
+
+    return toTrim;
 }
 
 vector<string> insertVectorAtIndString(int i, vector<string> addedInto, vector<string> toAdd)
@@ -179,4 +190,60 @@ string removeAllFirstChars(string input, string character)
     }
 
     return input;
+}
+
+float addObjs(TVarObj left, TVarObj right)
+{
+    float out;
+    visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+        [&](int &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var + var2;},
+                [&](int &var2) {out = (float)(var + var2);}}, right);},
+        [&](float &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var + var2;},
+                [&](int &var2) {out = (float)(var + var2);}}, right);}}, left);
+
+    return out;
+}
+
+float subtractObjs(TVarObj left, TVarObj right)
+{
+    float out;
+    visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+        [&](int &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var - var2;},
+                [&](int &var2) {out = (float)(var - var2);}}, right);},
+        [&](float &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var - var2;},
+                [&](int &var2) {out = (float)(var - var2);}}, right);}}, left);
+
+    return out;
+}
+
+float multiplyObjs(TVarObj left, TVarObj right)
+{
+    float out;
+    visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+        [&](int &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var * var2;},
+                [&](int &var2) {out = (float)(var * var2);}}, right);},
+        [&](float &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var * var2;},
+                [&](int &var2) {out = (float)(var * var2);}}, right);}}, left);
+
+    return out;
+}
+
+float divideObjs(TVarObj left, TVarObj right)
+{
+    float out;
+    visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+        [&](int &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var / var2;},
+                [&](int &var2) {out = (float)(var / var2);}}, right);},
+        [&](float &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = var / var2;},
+                [&](int &var2) {out = (float)(var / var2);}}, right);}}, left);
+
+    return out;
 }

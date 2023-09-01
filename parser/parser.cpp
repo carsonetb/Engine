@@ -40,6 +40,9 @@ int parseRun(string fileName)
     // Operators used to compare things.
     const vector<string> compareOperators = {"==", "!=", ">", "<", ">=", "<="};
 
+    // Operators used to change things.
+    const vector<string> changeOperators = {"+", "-", "*", "/", "+=", "-=", "*=", "/="};
+
     string fileString = readFile(fileName);
     vector<string> splitLines = splitString(fileString, "\n");
     int nestedStatements = 0;
@@ -121,6 +124,65 @@ int parseRun(string fileName)
         {
             justCompletedIf = false;
             justcompletedIfInfo = false;
+            continue;
+        }
+
+        if (startsWith(splitLines[i], (string) "varchange"))
+        {
+            justCompletedIf = false;
+            justcompletedIfInfo = false;
+            string removedKwd = splitString(splitLines[i], "varchange ")[1];
+            vector<string> splitOperator;
+
+            int j = -1;
+            string operatorUsed = "+";
+            while (splitOperator.size() != 2)
+            {
+                j++;
+                splitOperator = splitString(removedKwd, changeOperators[j]);
+                operatorUsed = changeOperators[j];
+            }
+
+            string left = splitOperator[0];
+            string right = splitOperator[1];
+            left = trimString(left, " ");
+            right = trimString(right, " ");
+            TVarObj leftObj;
+            TVarObj rightObj;
+
+            leftObj = getVarVal(left, programVars);
+
+            if (startsWith(right, "var"))
+            {
+                string rightRemovedVar = splitString(right, "var ")[1];
+                rightObj = getVarVal(rightRemovedVar, programVars);
+            }
+            else 
+            {
+                vector<string> splitSpace = splitString(right, " ");
+                rightObj = getMappableVar(splitSpace[0], splitSpace[1]);
+            }
+
+            TVarObj out;
+
+            if (operatorUsed == "+")
+            {
+                out = addObjs(leftObj, rightObj);
+            }
+            if (operatorUsed == "-")
+            {
+                out = subtractObjs(leftObj, rightObj);
+            }
+            if (operatorUsed == "*")
+            {
+                out = multiplyObjs(leftObj, rightObj);
+            }
+            if (operatorUsed == "/")
+            {
+                out = divideObjs(leftObj, rightObj);
+            }
+
+            programVars[left] = out;
             continue;
         }
 
