@@ -12,7 +12,6 @@ everything you can do in the language.
 # Installation
 You'll need to install g++ before doing any of this.
 You can install it at 'https://gcc.gnu.org/'.
-=====================================================
 To install T, clone the repository using the command:
 
 git clone https://github.com/carsonetb/Engine.git
