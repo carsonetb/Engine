@@ -1,3 +1,9 @@
+// Variable Computation
+// --------------------------------------------------
+
+// Create, store, pack, unpack, and handle variables.
+// Header: parser/varcomp.h
+
 #include "../raylib/src/raylib.h"
 #include "../utils/utils.h"
 #include "listcomp.h"

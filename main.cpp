@@ -17,7 +17,11 @@ int main(int argc, char* argv[])
         exitCode = 2;
         cout << "Err: No filename passed." << endl;
     }
-
+    
+    if (exitCode == 3)
+    {
+        cout << "Program exited with exit code 3: Expected fatal error." << endl;
+    }
     if (exitCode == 2)
     {
         cout << "Program exited with exit code 2: Incomplete." << endl;

@@ -63,10 +63,18 @@ if var a == int 5 {
     ... (true)
 }
 
-Currently T's if statement has limitations. You
-cannot use 'or' or 'and' operators (|| or &&) or 
-seperate those with perenthasis. This functionality
-will be added in the future.
+You can seperate checks with 'or' and 'and' operators
+('&&' and '||'). For example:
+
+var int a = 5
+var int b = 7
+
+if var a < var b && var a == int 5 || string gobbledeegook == string something else {
+    ... (true)
+}
+
+T currently does not support using parenthasis in if
+statements, although it will be added in the future.
 
 ## Keyword: var (utils/TVarObj)
 T variables are simple and similar to most other
@@ -149,3 +157,88 @@ Subsequently if we changed it to this:
 coustreamadd [0][0]b 
 
 It would print '5'.
+
+## Keyword: for
+T's for loops are like most other programming 
+languages: create iterator, which loops from start
+to stop:
+
+for i 0 10 {
+    ...
+}
+
+In this loop, the 'i' variable starts at zero and 
+iterates to 10.
+You can also create infinite loops.
+
+for i 2 : {
+    ...
+}
+
+The colon signifies that there is no end to the loop.
+'i' now starts at two and will keep increasing until
+the 'break' keyword is called.
+
+## Keyword: break
+'break' will exit the currently running for loop. It 
+will not wait to complete any task.
+
+## Keyword: quit
+'quit' will exit the program emmediately, as if it
+was finished, not like an error.
+
+# Errors
+Errors are created when the program runs into a 
+problem where it is impossible to continue (variable
+is created that isn't the type specified, invalid 
+syntax, etc.). These are errors that can happen when
+running your program.
+
+## Exit Codes
+Exit codes are general ways the program can exit.
+
+### Exit Code: 0
+This exit code is good. It means your program exited
+successfully either by the interpretter reaching the
+last line or by a call of 'quit'.
+
+### Exit Code: 1
+This exit code means an error occured, and the 
+program stopped before it could reach the end. This 
+most likely means there is a bug in your program.
+
+### Exit Code: 2
+This means the program never got a chance to run.
+Usually this means no file name was passed as a
+keyword argument when running the interpretter.
+
+### Exit Code: 3
+This is an error that was expected. This is usually
+an error that is supposed to happen, for example by
+a call of 'throwError'. This isn't neccesarily good
+or bad.
+
+## Interpretter Errors
+
+### SyntaxError
+This is probably the most common error. It means you
+made a typo somehow.
+
+### AttributeError
+This means that an objects attribute is incorrect.
+For example, a pointer which pointed to void should
+throw this error.
+
+### IOError
+This error currently only can happen if the 
+interpretter fails to open the file. Check if your
+file name is correct!
+
+# Warnings
+A warning is a message warning you of something that
+could cause an error in the future (of writing your
+code, or executing the program). A warning could be
+expected, or it could help you find the cause of a
+fatal flaw in your code. There are no specific types
+of warnings, but they aim to be as detailed as 
+possible.

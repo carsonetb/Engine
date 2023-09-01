@@ -1,3 +1,8 @@
+// Variable Computation Header
+// --------------------------------------------------
+
+// Create, store, pack, unpack, and handle variables.
+
 #pragma once
 #include <map>
 #include <string>

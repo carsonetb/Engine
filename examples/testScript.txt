@@ -1,14 +1,14 @@
 var list:list:string testList = [[hi, hello, ho], [hii, helloo, hoho]]
 var int access = 0
-coutstreamadd var [var:access][0]testList
-coutstreamadd endl
+print var [var:access][0]testList
+print endl
 
 var list:list:int testList2 = [[1, 5, 3], [7, 4, 3]]
 var int access2 = 1
-coutstreamadd var [var:access2][var:access]testList2
-coutstreamadd endl
+print var [var:access2][var:access]testList2
+print endl
 
-coutstreamadd would you like to start? (y/n) 
+print would you like to start? (y/n) 
 input userComfirm
 
 if var userComfirm == string n {
@@ -17,17 +17,18 @@ if var userComfirm == string n {
 else {
     for i 0 : {
 
-        coutstreamadd Which way would you like to go? (left/right/up/down) 
+        print Which way would you like to go? (left/right/up/down) 
         input direction
 
-        if var direction == string right {
-            coutstreamadd You win!
-            coutstreamadd endl 
+        var int checkInt = 5
+        if var direction == string right && var checkInt == int 5 || int 5 = int 7 {
+            print You win!
+            print endl 
             quit 
         }
         else {
-            coutstreamadd Incorrect! Guess again.
-            coutstreamadd endl
+            print Incorrect! Guess again.
+            print endl
         }
     }
 }

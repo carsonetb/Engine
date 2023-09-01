@@ -1,7 +1,14 @@
+// T Language Interpretter
+// --------------------------------------------------
+
+// T parser, central handler library for interpretting.
+// Header: parser/parser.h
+
 #include "../raylib/src/raylib.h"
 #include "../utils/utils.h"
 #include "listcomp.h"
 #include "varcomp.h"
+#include "ifcomp.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -133,7 +140,7 @@ int parseRun(string fileName)
             continue;
         }
 
-        if (startsWith(splitLines[i], (string) "coutstreamadd"))
+        if (startsWith(splitLines[i], (string) "print"))
         {
             justCompletedIf = false;
             justcompletedIfInfo = false;
@@ -153,7 +160,7 @@ int parseRun(string fileName)
             }
             else
             {
-                string toPrint = splitString(splitLines[i], "coutstreamadd ")[1];
+                string toPrint = splitString(splitLines[i], "print ")[1];
                 cout << toPrint << flush;
                 continue;
             }
@@ -175,90 +182,11 @@ int parseRun(string fileName)
         {
             justCompletedIf = false;
             justcompletedIfInfo = false;
-            vector<string> splitEquals = splitString(splitLines[i], "==");
 
-            int j = -1;
-            string operatorUsed = "==";
-            while (splitEquals.size() != 2)
-            {
-                j++;
-                splitEquals = splitString(splitLines[i], compareOperators[j]);
-                operatorUsed = compareOperators[j];
-            }
-
-            string left = splitString(splitEquals[0], "if ")[1];
-            string right = splitString(splitEquals[1], "{")[0];
-            left = trimChar(left, ' ');
-            right = trimChar(right, ' ');
-            vector<string> leftSplitSpace = splitString(left, " ");
-            vector<string> rightSplitSpace = splitString(right, " ");
-            TVarObj leftVal;
-            TVarObj rightVal;
-
-            if (leftSplitSpace[0] == "var")
-            {
-                leftVal = programVars[leftSplitSpace[1]];
-            }
-            else if (leftSplitSpace[0] == "it")
-            {
-                leftVal = iteratorsNameAccess[leftSplitSpace[1]];
-            }
-            else
-            {
-                leftVal = getMappableVar(leftSplitSpace[0], leftSplitSpace[1]);
-            }
-
-            if (rightSplitSpace[0] == "var")
-            {
-                rightVal = programVars[rightSplitSpace[1]];
-            }
-            else if (rightSplitSpace[0] == "it")
-            {
-                rightVal = iteratorsNameAccess[rightSplitSpace[1]];
-            }
-            else
-            {
-                rightVal = getMappableVar(rightSplitSpace[0], rightSplitSpace[1]);
-            }
-
-            string leftStringType = TVarObjTypes.at((int)leftVal.index());
-            string rightStringType = TVarObjTypes.at((int)rightVal.index());
-            if (((leftStringType == "string" | leftStringType == "list" | leftStringType == "bool") 
-               | (rightStringType == "string" | rightStringType == "list" | rightStringType == "bool"))
-              && !(operatorUsed == "==" | operatorUsed == "!=")
-            )
-            {
-                cout << "SyntaxError on line " << i + 1 - linesImported << ": In valid operands for operator '" << operatorUsed << "'. Aborting." << endl << flush;
-                return 1;
-            }
-
-            bool ifReturns = false;
-
-            if (operatorUsed == "==")
-            {
-                ifReturns = leftVal == rightVal;
-            }
-            if (operatorUsed == "!=")
-            {
-                ifReturns = leftVal != rightVal;
-            }
-            if (operatorUsed == ">")
-            {
-                ifReturns = leftVal > rightVal;
-            }
-            if (operatorUsed == "<")
-            {
-                ifReturns = leftVal < rightVal;
-            }
-            if (operatorUsed == ">=")
-            {
-                ifReturns = leftVal >= rightVal;
-            }
-            if (operatorUsed == "<=")
-            {
-                ifReturns = leftVal <= rightVal;
-
-            }
+            string ifRemoved = splitString(splitLines[i], "if ")[1];
+            string curlyBracketRemoved = splitString(ifRemoved, "{")[0];
+            vector<vector<string>> segmentatedIf = segmentateIf(curlyBracketRemoved);
+            bool ifReturns = checkSegmentatedIf(segmentatedIf, compareOperators, programVars, iteratorsNameAccess, i, linesImported);
 
             nestedStatements += 1;
             statementInfo[nestedStatements] = tuple<string, int, bool>{"if", -1, ifReturns};
@@ -349,9 +277,15 @@ int parseRun(string fileName)
             programVars[splitSpaces[1]] = inputString;
         }
 
-        if (startsWith(splitLines[i], (string){"quit"}))
+        if (startsWith(splitLines[i], (string)"quit"))
         {
             return 0;
+        }
+
+        if (startsWith(splitLines[i], (string)"throwError"))
+        {
+            cout << "UserError: User created error occured. Aborting." << endl << flush;
+            return 3;
         }
     }
 

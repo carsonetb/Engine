@@ -1,3 +1,9 @@
+// List Computation
+// --------------------------------------------------
+
+// Handle the creation and manipulation of lists.
+// Header: parser/listcomp.h
+
 #include "../raylib/src/raylib.h"
 #include "../utils/utils.h"
 #include <iostream>

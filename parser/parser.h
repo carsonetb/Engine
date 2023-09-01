@@ -1,3 +1,8 @@
+// T Language Interpretter Header
+// ----------------------------------------------------
+
+// T parser, central handler library for interpretting.
+
 #pragma once
 #include <string>
 

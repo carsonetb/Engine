@@ -1,3 +1,8 @@
+// List Computation Header
+// ----------------------------------------------
+
+// Handle the creation and manipulation of lists.
+
 #pragma once
 #include <vector>
 #include <string>
