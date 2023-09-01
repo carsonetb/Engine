@@ -169,6 +169,24 @@ coustreamadd [0][0]b
 
 It would print '5'.
 
+## Keyword: varchange
+Using this keyword you can add, subtract, multiply,
+or divide a variable by a value or another variable.
+The functionality of this keyword eliminates the need
+for a '+=', '-=', etc. operator:
+
+var int a = 5
+varchange a + int 1
+
+This would set 'a' to 6.
+You can also change a variable by another variable:
+
+var int a = 6
+var int b = 2
+varchange a / var b
+
+This would set 'a' to 3.
+
 ## Keyword: for
 T's for loops are like most other programming 
 languages: create iterator, which loops from start
