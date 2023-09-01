@@ -10,6 +10,9 @@ everything you can do in the language.
 =====================================================
 
 # Installation
+You'll need to install g++ before doing any of this.
+You can install it at 'https://gcc.gnu.org/'.
+=====================================================
 To install T, clone the repository using the command:
 
 git clone https://github.com/carsonetb/Engine.git
@@ -24,6 +27,15 @@ Now compile and run using make:
 
 make
 ./main [filename]
+
+NOTE: On windows, you don't need the ./ before 
+'main'.
+An example program is located at 
+examples/testScript.txt, so type the command ...
+
+./main examples/testScript
+
+... to run it.
 
 # Keywords
 Keywords, like var, for, or if are the backbones of a

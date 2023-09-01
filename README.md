@@ -1,6 +1,9 @@
 # Engine
 #### C++ game engine with code interpretter, created using the raylib graphics library.
 
+## Installation
+Instructions to install T are located in parser/DOCUMENTATION.md.
+
 ## T, Code Interpreter
 T, for turtle (likely because it's probably slow), is the custom code interpreter 
 created for the engine. Because it's quite a challenge to actually make a code 
