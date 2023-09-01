@@ -192,6 +192,28 @@ string removeAllFirstChars(string input, string character)
     return input;
 }
 
+int convertIteratorToString(TVarObj iterator)
+{
+    int out;
+    visit(
+        overloaded{
+            [&](TList) {},
+            [&](bool) {},
+            [&](int) {},
+            [&](float) {},
+            [&](string) {},
+            [&](TPointer) {},
+            [&](TIterator &var)
+            {
+                out = get<1>(var);
+            }
+        },
+        iterator
+    );
+
+    return out;
+}
+
 float addObjs(TVarObj left, TVarObj right)
 {
     float out;

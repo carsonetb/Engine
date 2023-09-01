@@ -22,6 +22,28 @@ int si(std::string i);
 int sf(std::string i);
 typedef std::tuple<std::string, std::string> TPointer;
 typedef std::tuple<std::string, int, int, int> TIterator;
+
+static inline bool operator<(const TIterator &lhs, const int &rhs) { return get<1>(lhs) < rhs; }
+static inline bool operator>(const TIterator &lhs, const int &rhs) { return get<1>(lhs) > rhs; }
+static inline bool operator<=(const TIterator &lhs, const int &rhs) { return get<1>(lhs) <= rhs; }
+static inline bool operator>=(const TIterator &lhs, const int &rhs) { return get<1>(lhs) >= rhs; }
+static inline bool operator==(const TIterator &lhs, const int &rhs) { return get<1>(lhs) == rhs; }
+static inline bool operator!=(const TIterator &lhs, const int &rhs) { return get<1>(lhs) != rhs; }
+
+static inline bool operator<(const TIterator &lhs, const float &rhs) { return get<1>(lhs) < rhs; }
+static inline bool operator>(const TIterator &lhs, const float &rhs) { return get<1>(lhs) > rhs; }
+static inline bool operator<=(const TIterator &lhs, const float &rhs) { return get<1>(lhs) <= rhs; }
+static inline bool operator>=(const TIterator &lhs, const float &rhs) { return get<1>(lhs) >= rhs; }
+static inline bool operator==(const TIterator &lhs, const float &rhs) { return get<1>(lhs) == rhs; }
+static inline bool operator!=(const TIterator &lhs, const float &rhs) { return get<1>(lhs) != rhs; }
+
+static inline bool operator<(const TIterator &lhs, const TIterator &rhs) { return get<1>(lhs) < get<1>(rhs); }
+static inline bool operator>(const TIterator &lhs, const TIterator &rhs) { return get<1>(lhs) > get<1>(rhs); }
+static inline bool operator<=(const TIterator &lhs, const TIterator &rhs) { return get<1>(lhs) <= get<1>(rhs); }
+static inline bool operator>=(const TIterator &lhs, const TIterator &rhs) { return get<1>(lhs) >= get<1>(rhs); }
+static inline bool operator==(const TIterator &lhs, const TIterator &rhs) { return get<1>(lhs) == get<1>(rhs); }
+static inline bool operator!=(const TIterator &lhs, const TIterator &rhs) { return get<1>(lhs) != get<1>(rhs); }
+
 typedef std::variant<bool, int, float, std::string, TPointer, TIterator> TListItem;
 
 struct TList
@@ -56,6 +78,7 @@ typedef std::variant<bool, int, float, std::string, TPointer, TIterator, TList> 
 const std::map<int, std::string> TVarObjTypes = {{0, "bool"}, {1, "int"}, {2, "float"}, {3, "string"}, {4, "pointer"}, {5, "iterator"}, {6, "list"}};
 typedef int TError;
 
+int convertIteratorToString(TVarObj iterator);
 float addObjs(TVarObj left, TVarObj right);
 float subtractObjs(TVarObj left, TVarObj right);
 float multiplyObjs(TVarObj left, TVarObj right);

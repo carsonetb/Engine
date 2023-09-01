@@ -87,7 +87,7 @@ int parseRun(string fileName)
                 {
                     if (!get<2>(statementInfo[nestedStatements]))
                     {
-                        if (get<1>(iterators[nestedStatements]) < get<3>(iterators[nestedStatements]))
+                        if (get<1>(iterators[nestedStatements]) < get<3>(iterators[nestedStatements]) - 1)
                         {
                             get<1>(iterators[nestedStatements]) += 1;
                             i = get<1>(statementInfo[nestedStatements]);
@@ -150,12 +150,12 @@ int parseRun(string fileName)
             TVarObj leftObj;
             TVarObj rightObj;
 
-            leftObj = getVarVal(left, programVars);
+            leftObj = getVarVal(left, programVars, iteratorsNameAccess);
 
             if (startsWith(right, "var"))
             {
                 string rightRemovedVar = splitString(right, "var ")[1];
-                rightObj = getVarVal(rightRemovedVar, programVars);
+                rightObj = getVarVal(rightRemovedVar, programVars, iteratorsNameAccess);
             }
             else 
             {
@@ -215,8 +215,8 @@ int parseRun(string fileName)
             }
             if (splitSpaces[1] == "var")
             {
-                TVarObj varObj = getVarVal(splitSpaces[2], programVars);
-                string varString = convertVarToString(varObj, programVars);
+                TVarObj varObj = getVarVal(splitSpaces[2], programVars, iteratorsNameAccess);
+                string varString = convertVarToString(varObj, programVars, iteratorsNameAccess);
                 cout << varString << flush;
                 continue;
             }
@@ -298,10 +298,10 @@ int parseRun(string fileName)
             }
             else
             {
-                int iteratorEnd = stoi(splitSpace[3]);
+                iteratorEnd = stoi(splitSpace[3]);
             }
 
-            int iteratorStart = stoi(splitSpace[2]);
+            int iteratorStart = stoi(splitSpace[2]) - 1;
 
             nestedStatements += 1;
             iterators[nestedStatements] = (TIterator){iteratorName, iteratorStart + 1, iteratorStart + 1, iteratorEnd};
@@ -309,11 +309,14 @@ int parseRun(string fileName)
             continue;
         }
 
-        if (startsWith(splitLines[i], (string) "break"))
+        if (startsWith(splitLines[i], (string) "break") || startsWith(splitLines[i], (string) "continue"))
         {
             // Check if break is inside function, if there is no for loop in that
             // function, error.
-            get<1>(iterators[iterators.size() - 1]) = get<3>(iterators[iterators.size() - 1]);
+            if (startsWith(splitLines[i], (string) "break"))
+            {
+                get<1>(iterators[iterators.size() - 1]) = get<3>(iterators[iterators.size() - 1]);
+            }
             int bracketExceptions = 0;
             while (get<0>(statementInfo[nestedStatements]) != "for")
             {

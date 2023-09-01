@@ -26,7 +26,7 @@ overloaded(Ts...) -> overloaded<Ts...>;
 // end of yucky code --------
 
 // I would hide this function if I were you ...
-TVarObj getVarValNoVariableIndexes(string var, map<string, TVarObj> programVars)
+TVarObj getVarValNoVariableIndexes(string var, map<string, TVarObj> programVars, map<string, TIterator> iteratorsNameAccess)
 {
     string numString;
     if (startsWith(var, "["))
@@ -55,6 +55,10 @@ TVarObj getVarValNoVariableIndexes(string var, map<string, TVarObj> programVars)
     if (programVars.find(numString) != programVars.end())
     {
         return programVars[var];
+    }
+    if (iteratorsNameAccess.find(numString) != iteratorsNameAccess.end())
+    {
+        return iteratorsNameAccess[var];
     }
     cout << "Warning in Variable Comprehension: Variable lookup failed." << endl << flush;
     TVarObj nullObj;
@@ -116,7 +120,7 @@ string convertVarToStringList(std::variant<TListItem, TList> input, map<string, 
     return out;
 }
 
-string convertVarToString(TVarObj input, map<string, TVarObj> programVars)
+string convertVarToString(TVarObj input, map<string, TVarObj> programVars, map<string, TIterator> iteratorsNameAccess)
 {
     string out;
     std::visit(
@@ -139,7 +143,7 @@ string convertVarToString(TVarObj input, map<string, TVarObj> programVars)
             },
             [&](TPointer &var)
             {
-                out = convertVarToString(getVarValNoVariableIndexes(get<1>(var), programVars), programVars);
+                out = convertVarToString(getVarValNoVariableIndexes(get<1>(var), programVars, iteratorsNameAccess), programVars, iteratorsNameAccess);
             },
             [&](TIterator &var)
             {
@@ -320,7 +324,7 @@ TVarObj getMappableVar(string varType, string varValue)
     return output;
 }
 
-TVarObj getVarVal(string var, map<string, TVarObj> programVars)
+TVarObj getVarVal(string var, map<string, TVarObj> programVars, map<string, TIterator> iteratorsNameAccess)
 {
     string numString;
     if (startsWith(var, "["))
@@ -353,12 +357,12 @@ TVarObj getVarVal(string var, map<string, TVarObj> programVars)
 
         if (startsWith(numString, "var"))
         {
-            TVarObj numObj = getVarVal(splitString(numString, ":")[1], programVars);
-            numString = convertVarToString(numObj, programVars);
+            TVarObj numObj = getVarVal(splitString(numString, ":")[1], programVars, iteratorsNameAccess);
+            numString = convertVarToString(numObj, programVars, iteratorsNameAccess);
         }
 
-        TVarObj listVal = getVarVal(valNoBracket, programVars);
-        string listString = unpackList(convertVarToString(listVal, programVars))[stoi(numString)];
+        TVarObj listVal = getVarVal(valNoBracket, programVars, iteratorsNameAccess);
+        string listString = unpackList(convertVarToString(listVal, programVars, iteratorsNameAccess))[stoi(numString)];
         string baseType = getListItemType(listVal);
         TVarObj objectVal = getMappableVar(baseType, listString);
         return objectVal;
@@ -371,6 +375,10 @@ TVarObj getVarVal(string var, map<string, TVarObj> programVars)
     if (programVars.find(numString) != programVars.end())
     {
         return programVars[var];
+    }
+    if (iteratorsNameAccess.find(numString) != iteratorsNameAccess.end())
+    {
+        return iteratorsNameAccess[var];
     }
     cout << "Warning in Variable Comprehension: Variable lookup failed." << endl << flush;
     TVarObj nullObj;

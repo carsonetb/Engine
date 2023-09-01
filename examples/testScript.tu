@@ -8,6 +8,11 @@ var int access2 = 1
 print var [var:access2][var:access]testList2
 print endl
 
+if var [var:access2][var:access]testList2 == 5 {
+    print hellooo
+    print endl
+}
+
 var int a = 5
 varchange a + int 1
 print var a 
@@ -16,12 +21,26 @@ print endl
 print would you like to start? (y/n) 
 input userComfirm
 
+for i 0 10 {
+    print looping 
+    print var i 
+    print endl 
+
+    if it i > int 5 {
+        print greater 
+        print endl
+        continue;
+    }
+
+    print less
+    print endl
+}
+
 if var userComfirm == string n {
     quit
 }
 else {
     for i 0 : {
-
         print Which way would you like to go? (left/right/up/down) 
         input direction
 

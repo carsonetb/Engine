@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/main",
             "args": [
-                "${workspaceRoot}/examples/testScript.txt"
+                "${workspaceRoot}/examples/testScript.tu"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",

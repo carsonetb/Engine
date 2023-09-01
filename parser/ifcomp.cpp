@@ -82,6 +82,15 @@ bool isCheckTrue(string check, vector<string> compareOperators, map<string, TVar
         rightVal = getMappableVar(rightSplitSpace[0], rightSplitSpace[1]);
     }
 
+    if (TVarObjTypes.at(leftVal.index()) == "iterator")
+    {
+        leftVal = convertIteratorToString(leftVal);
+    }
+    if (TVarObjTypes.at(rightVal.index()) == "iterator")
+    {
+        rightVal = convertIteratorToString(rightVal);
+    }
+
     string leftStringType = TVarObjTypes.at((int)leftVal.index());
     string rightStringType = TVarObjTypes.at((int)rightVal.index());
     if (((leftStringType == "string" | leftStringType == "list" | leftStringType == "bool") 
