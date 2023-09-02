@@ -202,6 +202,15 @@ int parseRun(string fileName)
             continue;
         }
 
+        if (startsWith(splitLines[i], (string) "setvar"))
+        {
+            vector<string> splitSpace = splitString(splitLines[i], " ");
+            string varToSet = splitSpace[1];
+            string varToSetTo = splitSpace[2];
+            TVarObj varToSetToObj = getVarVal(varToSetTo, programVars, iteratorsNameAccess);
+            programVars[varToSet] = varToSetToObj;
+        }
+
         if (startsWith(splitLines[i], (string) "print"))
         {
             justCompletedIf = false;

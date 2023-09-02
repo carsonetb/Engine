@@ -1,3 +1,4 @@
+
 var list:list:string testList = [[hi, hello, ho], [hii, helloo, hoho]]
 var int access = 0
 print var [var:access][0]testList
@@ -5,10 +6,16 @@ print endl
 
 var list:list:int testList2 = [[1, 5, 3], [7, 4, 3]]
 var int access2 = 1
+setvar listSegment [0]testList2 
+setvar listInt [1]listSegment 
+print var listInt
+print endl 
+print var listSegment 
+print endl
 print var [var:access2][var:access]testList2
 print endl
 
-if var [var:access2][var:access]testList2 == 5 {
+if var [var:access2][var:access]testList2 == int 5 {
     print hellooo
     print endl
 }

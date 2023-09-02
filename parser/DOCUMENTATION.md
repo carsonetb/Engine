@@ -151,7 +151,7 @@ var list:int a = [1, 2, 3]
 
 You can access a list also:
 
-coutstreamadd [1]a
+print [1]a
 
 Which prints '2'.
 You can also create a list of lists:
@@ -160,7 +160,7 @@ var list:list:int b = [[5, 4], [6, 7]]
 
 Printing an element in that list:
 
-coutstreamadd [0][1]b
+print [0][1]b
 
 Which prints '6'.
 Subsequently if we changed it to this:
@@ -186,6 +186,17 @@ var int b = 2
 varchange a / var b
 
 This would set 'a' to 3.
+
+## Keyword: setvar
+Sets a variable to a variable to another variable.
+Usage:
+
+int a = 1
+int b = a
+print b
+
+Output:
+1
 
 ## Keyword: for
 T's for loops are like most other programming 
