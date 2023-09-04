@@ -192,6 +192,24 @@ string removeAllFirstChars(string input, string character)
     return input;
 }
 
+double convertVarToDouble(TVarObj var)
+{
+    double out;
+    visit(
+        overloaded{
+            [&](TList) {},
+            [&](bool) {},
+            [&](int &var) {out = (double)var;},
+            [&](float &var) {out = (double)var;},
+            [&](string) {},
+            [&](TPointer) {},
+            [&](TIterator) {}
+        },
+        var
+    );
+    return out;
+}
+
 int convertIteratorToString(TVarObj iterator)
 {
     int out;

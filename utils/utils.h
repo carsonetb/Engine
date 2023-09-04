@@ -23,6 +23,26 @@ int sf(std::string i);
 typedef std::tuple<std::string, std::string> TPointer;
 typedef std::tuple<std::string, int, int, int> TIterator;
 
+struct TFunction 
+{
+    int createdLine;
+    std::string returnType;
+    std::string name;
+
+    // Vector of pointers.
+    std::vector<TPointer> arguments;
+};
+
+struct TFunctionCall
+{
+    std::string returnVarName;
+    std::string name;
+
+    // Vector of tuple of boolian to represent if it's a variable
+    // and string for the value passed or a variable name.
+    std::vector<std::tuple<bool, std::string>> arguments;
+};
+
 static inline bool operator<(const TIterator &lhs, const int &rhs) { return get<1>(lhs) < rhs; }
 static inline bool operator>(const TIterator &lhs, const int &rhs) { return get<1>(lhs) > rhs; }
 static inline bool operator<=(const TIterator &lhs, const int &rhs) { return get<1>(lhs) <= rhs; }
@@ -73,11 +93,11 @@ static inline bool operator-=(const TList &lhs, const TList &rhs) { return false
 static inline bool operator*=(const TList &lhs, const TList &rhs) { return false; }
 static inline bool operator/=(const TList &lhs, const TList &rhs) { return false; }
 
-
 typedef std::variant<bool, int, float, std::string, TPointer, TIterator, TList> TVarObj;
 const std::map<int, std::string> TVarObjTypes = {{0, "bool"}, {1, "int"}, {2, "float"}, {3, "string"}, {4, "pointer"}, {5, "iterator"}, {6, "list"}};
 typedef int TError;
 
+double convertVarToDouble(TVarObj var);
 int convertIteratorToString(TVarObj iterator);
 float addObjs(TVarObj left, TVarObj right);
 float subtractObjs(TVarObj left, TVarObj right);

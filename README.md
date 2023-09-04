@@ -15,7 +15,7 @@ features:
 
 ### Included Features
 
-* Simple conditionals: >, <, ==, etc., but not and/or operators like && or |.
+* Simple conditionals: >, <, ==, etc., and and/or operators like && and ||.
 * Variable decleration with basic types (int, float, bool, string, list).
 * Variable types that cannot be declared by the user currently (iterators and pointers).
 * For loops: creating an iterator that loops from start to stop. These can be trans-

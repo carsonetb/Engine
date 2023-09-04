@@ -9,6 +9,7 @@
 #include "listcomp.h"
 #include "varcomp.h"
 #include "ifcomp.h"
+#include "function.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -21,6 +22,7 @@
 
 using namespace std;
 
+// Interpret mode: Parse and run program.
 int parseRun(string fileName)
 {
     // General variables, varies.
@@ -32,6 +34,12 @@ int parseRun(string fileName)
     // Sometimes we need to access an iterator by it's name, not it's nested
     // depth.
     map<string, TIterator> iteratorsNameAccess;
+
+    // Map of functions. Can be accessed by name of function.
+    map<string, TFunction> functions;
+
+    // Temporary variable names for inside functions, accessed by depth.
+    map<int, vector<string>> tempProgramVars;
 
     // Types of variables that can be created. Not all of them can be 
     // specifically created by the user.
@@ -49,10 +57,11 @@ int parseRun(string fileName)
 
     // Create map for storing nested statement info for functions, if statements,
     // for loops, while loops, etc. Key is the nesting number, value is tuple of
-    // possible information. 1 holds the type (i.e. "while", "func", or "if").
+    // possible information. 1 holds the type (i.e. "for", "func", or "if").
     // 2 holds the line a function was called from or the line of the start of 
-    // a for or while loop. 3 holds if an if statement is true or false.
-    map<int, tuple<string, int, bool>> statementInfo;
+    // a for or while loop. 3 holds if an if statement is true or false. 4 holds
+    // a function's name.
+    map<int, tuple<string, int, bool, string>> statementInfo;
 
     bool justCompletedIf = false;
     bool justcompletedIfInfo = false;
@@ -75,6 +84,24 @@ int parseRun(string fileName)
         {
             if (nestedStatements > 0)
             {
+                if (get<0>(statementInfo[nestedStatements]) == "func")
+                {
+                    for (int i = 0; i < tempProgramVars[nestedStatements].size(); i++)
+                    {
+                        programVars.erase(tempProgramVars[nestedStatements][i]);
+                    }
+
+                    if (functions[get<3>(statementInfo[nestedStatements])].returnType != "void")
+                    {
+                        cout << "NoReturnError on line " << i + 1 - linesImported << ". End of function reached but function does not return 'void'. Aborting." << endl << flush;
+                        return 1;
+                    }
+
+                    i = get<1>(statementInfo[nestedStatements]);
+                    tempProgramVars.erase(nestedStatements);
+                    nestedStatements -= 1;
+                    continue;
+                }
                 if (get<0>(statementInfo[nestedStatements]) == "if")
                 {
                     justCompletedIf = true;
@@ -124,6 +151,81 @@ int parseRun(string fileName)
         {
             justCompletedIf = false;
             justcompletedIfInfo = false;
+            continue;
+        }
+
+        if (startsWith(splitLines[i], (string) "func"))
+        {
+            justCompletedIf = false;
+            justcompletedIfInfo = false;
+
+            TFunction createdFunction = unpackFunctionLine(splitLines[i], i);
+            functions[createdFunction.name] = createdFunction;
+
+            int bracketDepth = 0;
+            i++;
+
+            while (bracketDepth > 0 || !startsWith(splitLines[i], "}"))
+            {
+                if (startsWith(splitLines[i], "for") || startsWith(splitLines[i], "if") || startsWith(splitLines[i], "func"))
+                {
+                    bracketDepth += 1;
+                }
+
+                if (startsWith(splitLines[i], "}"))
+                {
+                    bracketDepth -= 1;
+                }
+
+                i++;
+            }
+
+            continue;
+        }
+
+        if (startsWith(splitLines[i], (string) "callfunc"))
+        {
+            TFunctionCall toCall = unpackFunctionCallLine(splitLines[i]);
+            callFunction(toCall, statementInfo, programVars, i, nestedStatements, functions, iteratorsNameAccess);
+            continue;
+        }
+
+        if (startsWith(splitLines[i], (string) "return"))
+        {
+            while (get<0>(statementInfo[nestedStatements]) != "func")
+            {
+                nestedStatements -= 1;
+
+                if (nestedStatements == 0)
+                {
+                    cout << "SyntaxError on line " << i + 1 - linesImported << ": Unexpected 'return' when not inside function. Aborting." << endl << flush;
+                    return 1;
+                }
+            }
+
+            TFunction calledFunctionVar = functions[get<3>(statementInfo[nestedStatements])];
+            int calledLine = get<1>(statementInfo[nestedStatements]);
+            TFunctionCall calledFunction = unpackFunctionCallLine(splitLines[calledLine]);
+            string returnVarName = calledFunction.returnVarName;
+
+            vector<string> splitSpace = splitString(splitLines[i], " ");
+            TVarObj returnValue;
+
+            if (splitSpace[1] == "var")
+            {
+                returnValue = getVarVal(splitSpace[2], programVars, iteratorsNameAccess);
+            }
+            else 
+            {
+                returnValue = getMappableVar(calledFunctionVar.returnType, splitSpace[1]);
+            }
+
+            if (returnVarName != "void")
+            {
+                programVars[returnVarName] = returnValue;
+            }
+
+            i = calledLine;
             continue;
         }
 
@@ -260,7 +362,7 @@ int parseRun(string fileName)
             bool ifReturns = checkSegmentatedIf(segmentatedIf, compareOperators, programVars, iteratorsNameAccess, i, linesImported);
 
             nestedStatements += 1;
-            statementInfo[nestedStatements] = tuple<string, int, bool>{"if", -1, ifReturns};
+            statementInfo[nestedStatements] = tuple<string, int, bool, string>{"if", -1, ifReturns, ""};
             continue;
         }
 
@@ -271,7 +373,7 @@ int parseRun(string fileName)
                 if (!justcompletedIfInfo)
                 {
                     nestedStatements += 1;
-                    statementInfo[nestedStatements] = tuple<string, int, bool>{"if", -1, true};
+                    statementInfo[nestedStatements] = tuple<string, int, bool, string>{"if", -1, true, ""};
                 }
             }
             else
@@ -314,7 +416,7 @@ int parseRun(string fileName)
 
             nestedStatements += 1;
             iterators[nestedStatements] = (TIterator){iteratorName, iteratorStart + 1, iteratorStart + 1, iteratorEnd};
-            statementInfo[nestedStatements] = tuple<string, int, bool>{"for", i, forever};
+            statementInfo[nestedStatements] = tuple<string, int, bool, string>{"for", i, forever, ""};
             continue;
         }
 

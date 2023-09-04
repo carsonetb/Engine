@@ -198,6 +198,37 @@ print b
 Output:
 1
 
+## Keyword: func
+Creates a function that can be called. Must specify a
+type that the function returns. You add keyword 
+arguments for the function also:
+
+func [type] [name]([kwdtype] [kwdname], [kwdtype] [kwdname]) {
+    ...
+}
+
+## Keyword: return
+Inside of a function you can return a value. For 
+example:
+
+func int add(int a, int b) {
+    varchange a + var b
+    return a
+}
+
+## Keyword: callfunc
+Once you've created a function, you can call it:
+
+callfunc add(5, 6)
+
+You can set the return value of a function into a 
+variable:
+
+callfunc add(5, 6) into c
+print c
+
+The value of c is 11!
+
 ## Keyword: for
 T's for loops are like most other programming 
 languages: create iterator, which loops from start
@@ -273,6 +304,10 @@ throw this error.
 This error currently only can happen if the 
 interpretter fails to open the file. Check if your
 file name is correct!
+
+### NoReturnError
+If a function that doesn't return void reaches it's
+ending, a NoReturnError will be called.
 
 # Warnings
 A warning is a message warning you of something that

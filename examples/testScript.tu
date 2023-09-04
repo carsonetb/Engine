@@ -20,6 +20,18 @@ if var [var:access2][var:access]testList2 == int 5 {
     print endl
 }
 
+func int testFunc(int aval, int bval) {
+    varchange aval + var bval
+    if var aval > int 10 {
+        return var aval
+    }
+    return 0
+}
+callfunc testFunc(5, 6) into returnVal
+
+print var returnVal
+print endl
+
 var int a = 5
 varchange a + int 1
 print var a 
@@ -52,7 +64,7 @@ else {
         input direction
 
         var int checkInt = 5
-        if var direction == string right && var checkInt == int 5 || int 5 = int 7 {
+        if var direction == string right && var checkInt == int 5 || int 5 == int 7 {
             print You win!
             print endl 
             quit 

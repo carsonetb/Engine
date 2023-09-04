@@ -90,6 +90,14 @@ bool isCheckTrue(string check, vector<string> compareOperators, map<string, TVar
     {
         rightVal = convertIteratorToString(rightVal);
     }
+    if (operatorUsed == "==")
+    {
+        return leftVal == rightVal;
+    }
+    if (operatorUsed == "!=")
+    {
+        return leftVal != rightVal;
+    }
 
     string leftStringType = TVarObjTypes.at((int)leftVal.index());
     string rightStringType = TVarObjTypes.at((int)rightVal.index());
@@ -98,35 +106,29 @@ bool isCheckTrue(string check, vector<string> compareOperators, map<string, TVar
         && !(operatorUsed == "==" | operatorUsed == "!=")
     )
     {
-        cout << "SyntaxError on line " << i + 1 - linesImported << ": In valid operands for operator '" << operatorUsed << "'. Aborting." << endl << flush;
-        return 1;
+        cout << "SyntaxError on line " << i + 1 - linesImported << ": Invalid operands for operator '" << operatorUsed << "'. Aborting." << endl << flush;
+        exit(EXIT_FAILURE);
     }
 
+    double leftNum = convertVarToDouble(leftVal);
+    double rightNum = convertVarToDouble(rightVal);
     bool ifReturns = false;
 
-    if (operatorUsed == "==")
-    {
-        ifReturns = leftVal == rightVal;
-    }
-    if (operatorUsed == "!=")
-    {
-        ifReturns = leftVal != rightVal;
-    }
     if (operatorUsed == ">")
     {
-        ifReturns = leftVal > rightVal;
+        ifReturns = leftNum > rightNum;
     }
     if (operatorUsed == "<")
     {
-        ifReturns = leftVal < rightVal;
+        ifReturns = leftNum < rightNum;
     }
     if (operatorUsed == ">=")
     {
-        ifReturns = leftVal >= rightVal;
+        ifReturns = leftNum >= rightNum;
     }
     if (operatorUsed == "<=")
     {
-        ifReturns = leftVal <= rightVal;
+        ifReturns = leftNum <= rightNum;
     }
 
     return ifReturns;
