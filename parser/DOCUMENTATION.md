@@ -80,7 +80,7 @@ You can seperate checks with 'or' and 'and' operators
 var int a = 5
 var int b = 7
 
-if var a < var b && var a == int 5 || string gobbledeegook == string something else {
+if var a < var b && var a == int 5 || string c == string d {
     ... (true)
 }
 
@@ -203,7 +203,7 @@ Creates a function that can be called. Must specify a
 type that the function returns. You add keyword 
 arguments for the function also:
 
-func [type] [name]([kwdtype] [kwdname], [kwdtype] [kwdname]) {
+func int add(int a, int b) {
     ...
 }
 
@@ -215,6 +215,12 @@ func int add(int a, int b) {
     varchange a + var b
     return a
 }
+
+When exiting a function, all variables created in
+said function (including arguments) will be deleted.
+To keep one, set a variable outside the function
+to it's value, or return that variable (as long as
+it has the return type of the function).
 
 ## Keyword: callfunc
 Once you've created a function, you can call it:
@@ -257,6 +263,10 @@ will not wait to complete any task.
 ## Keyword: quit
 'quit' will exit the program emmediately, as if it
 was finished, not like an error.
+
+# Comments
+At the start of a line, type a hashtag (#), and that
+line will be ignored.
 
 # Errors
 Errors are created when the program runs into a 

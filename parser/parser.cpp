@@ -80,6 +80,8 @@ int parseRun(string fileName)
             iteratorsNameAccess[get<0>(iterators[j])] = iterators[j];
         }
 
+        if (startsWith(splitLines[i], (string) "#")) continue; // Comment
+
         if (startsWith(splitLines[i], (string) "}"))
         {
             if (nestedStatements > 0)
@@ -223,6 +225,12 @@ int parseRun(string fileName)
             if (returnVarName != "void")
             {
                 programVars[returnVarName] = returnValue;
+            }
+
+            // Clean up temporary variables.
+            for (int i = 0; i < tempProgramVars[nestedStatements].size(); i++)
+            {
+                programVars.erase(tempProgramVars[nestedStatements][i]);
             }
 
             i = calledLine;

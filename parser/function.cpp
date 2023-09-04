@@ -114,7 +114,8 @@ TFunctionCall unpackFunctionCallLine(string line)
 }
 
 void callFunction(TFunctionCall toCall, map<int, tuple<string, int, bool, string>> &statementInfo, map<string, TVarObj> &programVars, 
-                  int &currentLine, int &nestedStatements, map<string, TFunction> functions, map<string, TIterator> iteratorsNameAccess)
+                  int &currentLine, int &nestedStatements, map<string, TFunction> functions, map<string, TIterator> iteratorsNameAccess,
+                  map<int, vector<string>> tempProgramVars)
 {
     statementInfo[nestedStatements + 1] = tuple<string, int, bool, string>{(string) "func", currentLine, false, toCall.name};
     currentLine = functions[toCall.name].createdLine;
@@ -126,6 +127,8 @@ void callFunction(TFunctionCall toCall, map<int, tuple<string, int, bool, string
         string argName = get<1>(functions[toCall.name].arguments[i]);
         string argType = get<0>(functions[toCall.name].arguments[i]);
         bool isVar = get<0>(toCall.arguments[i]);
-        programVars[argName] = isVar ? getVarVal(argVal, programVars, iteratorsNameAccess) : getMappableVar(argType, argVal);
+        TVarObj argObj = isVar ? getVarVal(argVal, programVars, iteratorsNameAccess) : getMappableVar(argType, argVal);
+        programVars[argName] = argObj;
+        tempProgramVars[nestedStatements].push_back(argName);
     }
 }
