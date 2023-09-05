@@ -14,4 +14,4 @@ TFunction unpackFunctionLine(std::string line, int currentLine);
 TFunctionCall unpackFunctionCallLine(std::string line);
 void callFunction(TFunctionCall toCall, std::map<int, std::tuple<std::string, int, bool, std::string>> &statementInfo,
                   std::map<std::string, TVarObj> &programVars, int &currentLine, int &nestedStatements, std::map<std::string, TFunction> functions,
-                  std::map<std::string, TIterator> iteratorsNameAccess);
+                  std::map<std::string, TIterator> iteratorsNameAccess, std::map<int, std::vector<std::string>> tempProgramVars);

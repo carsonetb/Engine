@@ -264,7 +264,33 @@ will not wait to complete any task.
 'quit' will exit the program emmediately, as if it
 was finished, not like an error.
 
-# Comments
+# Operators
+There are three types of operators currently in T: 
+comparison operators, arithmetic operators, and
+if statement seperators like and and or (and also 
+comments).
+
+## Comparison Operators
+Comparison operators can only be used in if 
+statements currently, and compare two variables,
+returning true or false. (Seperated by spaces) they 
+are:
+
+== != > < <= >=
+
+## Arithmetic Operators
+Arithmetic Operators are used to change one variable
+by another. They can currently only be used on 
+integer or floating point types. They are:
+
++ - * / ^
+
+## Other
+Other operators might include:
+
+&& || [ ] ( ) { } , : = 
+
+## Comments
 At the start of a line, type a hashtag (#), and that
 line will be ignored.
 

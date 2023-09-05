@@ -103,3 +103,4 @@ float addObjs(TVarObj left, TVarObj right);
 float subtractObjs(TVarObj left, TVarObj right);
 float multiplyObjs(TVarObj left, TVarObj right);
 float divideObjs(TVarObj left, TVarObj right);
+float exponentiateObjs(TVarObj left, TVarObj right);

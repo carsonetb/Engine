@@ -188,7 +188,7 @@ int parseRun(string fileName)
         if (startsWith(splitLines[i], (string) "callfunc"))
         {
             TFunctionCall toCall = unpackFunctionCallLine(splitLines[i]);
-            callFunction(toCall, statementInfo, programVars, i, nestedStatements, functions, iteratorsNameAccess);
+            callFunction(toCall, statementInfo, programVars, i, nestedStatements, functions, iteratorsNameAccess, tempProgramVars);
             continue;
         }
 
@@ -290,6 +290,10 @@ int parseRun(string fileName)
             if (operatorUsed == "/")
             {
                 out = divideObjs(leftObj, rightObj);
+            }
+            if (operatorUsed == "^")
+            {
+                out = exponentiateObjs(leftObj, rightObj);
             }
 
             programVars[left] = out;

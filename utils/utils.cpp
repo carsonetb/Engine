@@ -287,3 +287,17 @@ float divideObjs(TVarObj left, TVarObj right)
 
     return out;
 }
+
+float exponentiateObjs(TVarObj left, TVarObj right)
+{
+    float out;
+    visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+        [&](int &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = (float)pow(var, var2);},
+                [&](int &var2) {out = (float)pow(var, var2);}}, right);},
+        [&](float &var) {visit(overloaded{[&](TList) {},[&](string) {},[&](TPointer) {},[&](TIterator) {},[&](bool) {},
+                [&](float &var2) {out = (float)pow(var, var2);},
+                [&](int &var2) {out = (float)pow(var, var2);}}, right);}}, left);
+
+    return out;
+}
