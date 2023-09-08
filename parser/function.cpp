@@ -6,6 +6,7 @@
 
 #include "../raylib/src/raylib.h"
 #include "../utils/utils.h"
+#include "../graphics/graphics.h"
 #include "varcomp.h"
 #include <iostream>
 #include <fstream>
@@ -24,7 +25,19 @@ using namespace std;
 // }
 // callfunc testFunc(5, 10) into added
 
-vector<tuple<string, string>> unpackArgumentString(string arguments)
+TVarObj getArgVal(tuple<bool, string> arg, string type, map<string, TVarObj> programVars, map<string, TIterator> iteratorsNameAccess)
+{
+    if (get<0>(arg))
+    {
+        return getVarVal(get<1>(arg), programVars, iteratorsNameAccess);
+    }
+    else 
+    {
+        return getMappableVar(type, get<1>(arg));
+    }
+}
+
+vector<tuple<string, string>> unpackArgumentString(string arguments, int line, int linesImported)
 {
     vector<string> splitComma = splitString(arguments, ",");
     vector<tuple<string, string>> out;
@@ -35,6 +48,13 @@ vector<tuple<string, string>> unpackArgumentString(string arguments)
         vector<string> splitSpace = splitString(trimmedArgument, " ");
 
         string argType = splitSpace[0];
+
+        if (!isValidType(argType))
+        {
+            cout << "Syntax error on line " << line + 1 - linesImported << ": Invalid type '" << argType << "' for argument " << i + 1 << ". Aborting." << endl << flush;
+            exit(EXIT_FAILURE);
+        }
+
         string argName = splitSpace[1];
 
         out.push_back(tuple<string, string>{argType, argName});
@@ -66,7 +86,7 @@ vector<tuple<bool, string>> unpackCallArgumentString(string arguments)
     return out;
 }
 
-TFunction unpackFunctionLine(string line, int currentLine)
+TFunction unpackFunctionLine(string line, int currentLine, int linesImported)
 {
     TFunction out;
     out.createdLine = currentLine;
@@ -81,7 +101,7 @@ TFunction unpackFunctionLine(string line, int currentLine)
     out.returnType = splitSpace[1];
     out.name = splitSpace[2];
 
-    out.arguments = unpackArgumentString(argumentString);
+    out.arguments = unpackArgumentString(argumentString, currentLine, linesImported);
 
     return out;
 }
@@ -99,11 +119,10 @@ TFunctionCall unpackFunctionCallLine(string line)
     out.name = splitSpace[1];
     out.arguments = unpackCallArgumentString(argumentString);
 
-    string returnVarName = splitString(line, " into ")[1];
-
-    if (!startsWith(returnVarName, "callfunc "))
+    vector<string> splitInto = splitString(line, " -> ");
+    if (splitInto.size() > 1)
     {
-        out.returnVarName = returnVarName;
+        out.returnVarName = splitInto[1];
     }
     else 
     {
@@ -115,8 +134,21 @@ TFunctionCall unpackFunctionCallLine(string line)
 
 void callFunction(TFunctionCall toCall, map<int, tuple<string, int, bool, string>> &statementInfo, map<string, TVarObj> &programVars, 
                   int &currentLine, int &nestedStatements, map<string, TFunction> functions, map<string, TIterator> iteratorsNameAccess,
-                  map<int, vector<string>> tempProgramVars)
+                  map<int, vector<string>> tempProgramVars, vector<string> splitLines)
 {
+    toCall.name = trimString(toCall.name, " ");
+
+    // Check if this is a graphics call.
+    if (startsWith(toCall.name, "graphics|"))
+    {
+        TVarObj graphicsCallReturns = handleGraphicsFunctionCall(splitLines[currentLine], programVars, iteratorsNameAccess);
+        if (toCall.name != "void")
+        {
+            programVars[toCall.returnVarName] = graphicsCallReturns;
+        }
+        return;
+    }
+
     statementInfo[nestedStatements + 1] = tuple<string, int, bool, string>{(string) "func", currentLine, false, toCall.name};
     currentLine = functions[toCall.name].createdLine;
     nestedStatements++;
@@ -131,4 +163,4 @@ void callFunction(TFunctionCall toCall, map<int, tuple<string, int, bool, string
         programVars[argName] = argObj;
         tempProgramVars[nestedStatements].push_back(argName);
     }
-}
+} 

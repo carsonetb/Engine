@@ -27,7 +27,7 @@ func int testFunc(int aval, int bval) {
     }
     return 0
 }
-callfunc testFunc(5, 6) into returnVal
+callfunc testFunc(5, 6) -> returnVal
 
 print var returnVal
 print endl

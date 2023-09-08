@@ -1,3 +1,9 @@
+// General Utilities
+// --------------------------------------------------
+
+// General utilities for use by other programs.
+// Header: utils/utils.h
+
 #include "utils.h"
 #include "../raylib/src/raylib.h"
 #include <iostream>
@@ -132,6 +138,11 @@ bool startsWith(const string &str, const string &prefix)
     return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
 }
 
+bool isValidType(string type)
+{
+    return type == "var" || type == "int" || type == "float" || type == "string" || type == "iterator" || type == "pointer" || type == "bool" || type == "list";
+}
+
 bool endsWith(const string &str, const string &suffix) 
 {
     if (str.length() >= suffix.length()) {
@@ -197,16 +208,14 @@ double convertVarToDouble(TVarObj var)
     double out;
     visit(
         overloaded{
-            [&](TList) {},
-            [&](bool) {},
+            [&](TList &var) {out = (double)var.item.size();},
+            [&](bool &var) {out = (double)(var ? 1 : 0);},
             [&](int &var) {out = (double)var;},
             [&](float &var) {out = (double)var;},
-            [&](string) {},
-            [&](TPointer) {},
-            [&](TIterator) {}
-        },
-        var
-    );
+            [&](string &var) {out = (double)(var.size());},
+            [&](TIterator &var) {out = (double)(get<1>(var));},
+            [&](TPointer) {}},var
+        );
     return out;
 }
 
@@ -219,7 +228,7 @@ int convertIteratorToString(TVarObj iterator)
             [&](bool) {},
             [&](int) {},
             [&](float) {},
-            [&](string) {},
+            [&](string &var) {},
             [&](TPointer) {},
             [&](TIterator &var)
             {

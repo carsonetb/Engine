@@ -90,14 +90,6 @@ bool isCheckTrue(string check, vector<string> compareOperators, map<string, TVar
     {
         rightVal = convertIteratorToString(rightVal);
     }
-    if (operatorUsed == "==")
-    {
-        return leftVal == rightVal;
-    }
-    if (operatorUsed == "!=")
-    {
-        return leftVal != rightVal;
-    }
 
     string leftStringType = TVarObjTypes.at((int)leftVal.index());
     string rightStringType = TVarObjTypes.at((int)rightVal.index());
@@ -114,6 +106,14 @@ bool isCheckTrue(string check, vector<string> compareOperators, map<string, TVar
     double rightNum = convertVarToDouble(rightVal);
     bool ifReturns = false;
 
+    if (operatorUsed == "==")
+    {
+        return leftVal == rightVal;
+    }
+    if (operatorUsed == "!=")
+    {
+        return leftVal != rightVal;
+    }
     if (operatorUsed == ">")
     {
         ifReturns = leftNum > rightNum;

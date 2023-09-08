@@ -1,3 +1,8 @@
+// General Utilities Header
+// --------------------------------------------------
+
+// General utilities for use by other programs.
+
 #pragma once
 #include <string>
 #include <vector>
@@ -16,6 +21,7 @@ std::string readFile(std::string fileName);
 std::vector<std::string> splitString(std::string toSplit, std::string character);
 bool startsWith(const std::string &str, const std::string &prefix);
 bool endsWith(const std::string &str, const std::string &suffix);
+bool isValidType(std::string type);
 std::vector<std::string> insertVectorAtIndString(int i, std::vector<std::string> addedInto, std::vector<std::string> toAdd);
 std::string removeAllFirstChars(std::string input, std::string character);
 int si(std::string i);

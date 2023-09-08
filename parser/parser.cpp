@@ -49,7 +49,7 @@ int parseRun(string fileName)
     const vector<string> compareOperators = {"==", "!=", ">", "<", ">=", "<="};
 
     // Operators used to change things.
-    const vector<string> changeOperators = {"+", "-", "*", "/", "+=", "-=", "*=", "/="};
+    const vector<string> changeOperators = {"+", "-", "*", "/", "^"};
 
     string fileString = readFile(fileName);
     vector<string> splitLines = splitString(fileString, "\n");
@@ -71,6 +71,7 @@ int parseRun(string fileName)
     for (int i = 0; i < splitLines.size(); i++)
     {
         splitLines[i] = removeAllFirstChars(splitLines[i], " ");
+        splitLines[i] = trimString(splitLines[i], " ");
     }
 
     for (int i = 0; i < splitLines.size(); i++)
@@ -161,7 +162,7 @@ int parseRun(string fileName)
             justCompletedIf = false;
             justcompletedIfInfo = false;
 
-            TFunction createdFunction = unpackFunctionLine(splitLines[i], i);
+            TFunction createdFunction = unpackFunctionLine(splitLines[i], i, linesImported);
             functions[createdFunction.name] = createdFunction;
 
             int bracketDepth = 0;
@@ -188,7 +189,7 @@ int parseRun(string fileName)
         if (startsWith(splitLines[i], (string) "callfunc"))
         {
             TFunctionCall toCall = unpackFunctionCallLine(splitLines[i]);
-            callFunction(toCall, statementInfo, programVars, i, nestedStatements, functions, iteratorsNameAccess, tempProgramVars);
+            callFunction(toCall, statementInfo, programVars, i, nestedStatements, functions, iteratorsNameAccess, tempProgramVars, splitLines);
             continue;
         }
 
@@ -208,7 +209,7 @@ int parseRun(string fileName)
             TFunction calledFunctionVar = functions[get<3>(statementInfo[nestedStatements])];
             int calledLine = get<1>(statementInfo[nestedStatements]);
             TFunctionCall calledFunction = unpackFunctionCallLine(splitLines[calledLine]);
-            string returnVarName = calledFunction.returnVarName;
+            string returnVarName = splitString(calledFunction.returnVarName, " ")[0];
 
             vector<string> splitSpace = splitString(splitLines[i], " ");
             TVarObj returnValue;
@@ -448,6 +449,10 @@ int parseRun(string fileName)
             }
             while (!startsWith(splitLines[i], "}") || bracketExceptions > 0)
             {
+                if (splitLines[i].find("{") != splitLines[i].npos)
+                {
+                    bracketExceptions += 1;
+                }
                 if (startsWith(splitLines[i], "}"))
                 {
                     bracketExceptions -= 1;
